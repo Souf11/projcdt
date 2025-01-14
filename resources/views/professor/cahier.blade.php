@@ -30,8 +30,6 @@
     </div>
 </nav>
 
-
-
     <!-- Page Content -->
     <div class="min-h-screen flex items-center justify-center">
         <div class="max-w-4xl w-full p-8 bg-white rounded-lg shadow-lg">
@@ -47,6 +45,22 @@
                                 <h3 class="text-xl font-bold text-gray-900">{{ $class->course_name }} ({{ $class->groupe }})</h3>
                                 <p class="text-sm text-gray-600">{{ $class->date }}</p>
                                 <p class="mt-2 text-gray-700">{{ $class->details }}</p>
+
+                                <div class="mt-4 flex justify-between">
+                                    <!-- Edit Button -->
+                                    <a href="{{ route('professor.editClass', $class->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded" style="background-color: #041228;">
+                                        Modifier
+                                    </a>
+
+                                    <!-- Delete Button -->
+                                    <form action="{{ route('professor.deleteClass', $class->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </div>
                             </li>
                         @endforeach
                     </ul>

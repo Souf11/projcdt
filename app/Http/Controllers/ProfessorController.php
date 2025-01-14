@@ -149,4 +149,70 @@ class ProfessorController extends Controller
 
         return view('professor.cahier', compact('classes'));
     }
+
+    // Show Edit Class Form
+    public function editClass($id)
+    {
+        $class = Course::findOrFail($id);
+
+        // Check if the logged-in professor is the one who created the class
+        if ($class->professor_id !== Auth::id()) {
+            return redirect()->route('professor.cahierDeTexte')->with('error', 'Vous ne pouvez pas modifier ce cours.');
+        }
+
+        return view('professor.editClass', compact('class'));
+    }
+
+    // Update Class
+    public function updateClass(Request $request, $id)
+    {
+        $class = Course::findOrFail($id);
+
+        // Check if the logged-in professor is the one who created the class
+        if ($class->professor_id !== Auth::id()) {
+            return redirect()->route('professor.cahierDeTexte')->with('error', 'Vous ne pouvez pas modifier ce cours.');
+        }
+
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'groupe' => 'required|string|max:255',
+            'course_name' => 'required|string|max:255',
+            'details' => 'required|string',
+        ]);
+
+        try {
+            $class->date = $validated['date'];
+            $class->groupe = $validated['groupe'];
+            $class->course_name = $validated['course_name'];
+            $class->details = $validated['details'];
+            $class->save();
+
+            return redirect()->route('professor.cahierDeTexte')->with('success', 'Le cours a été modifié avec succès.');
+        } catch (\Exception $e) {
+            Log::error('Error updating class information: ' . $e->getMessage());
+
+            return back()->with('error', 'Une erreur est survenue. Veuillez réessayer.');
+        }
+    }
+
+    // Delete Class
+    public function deleteClass($id)
+    {
+        $class = Course::findOrFail($id);
+
+        // Check if the logged-in professor is the one who created the class
+        if ($class->professor_id !== Auth::id()) {
+            return redirect()->route('professor.cahierDeTexte')->with('error', 'Vous ne pouvez pas supprimer ce cours.');
+        }
+
+        try {
+            $class->delete();
+
+            return redirect()->route('professor.cahierDeTexte')->with('success', 'Le cours a été supprimé avec succès.');
+        } catch (\Exception $e) {
+            Log::error('Error deleting class: ' . $e->getMessage());
+
+            return back()->with('error', 'Une erreur est survenue. Veuillez réessayer.');
+        }
+    }
 }
