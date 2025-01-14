@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
-    // Show Admin Login Form
+    
     public function showLoginForm()
     {
         return view('auth.admin.login');
     }
 
-    // Handle Admin Login
+    
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -24,25 +24,24 @@ class AdminController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Hardcoded admin credentials (for testing only, consider using a database model in production)
+        
         if ($credentials['username'] === 'admin' && $credentials['password'] === 'emsi1') {
-            Auth::guard('admin')->loginUsingId(1); // Assuming admin user ID is 1
+            Auth::guard('admin')->loginUsingId(1); 
             return redirect()->route('admin.home');
         }
 
-        // If credentials don't match, redirect back with error
+
         return back()->withErrors(['username' => 'Invalid credentials']);
     }
 
-    // Admin Home (dashboard)
+   
     public function home()
     {
-        // Fetch professors with their courses
         $professors = Professor::with('courses')->get();
-        return view('auth.admin.professors_and_classes', compact('professors')); // Correct view path
+        return view('auth.admin.professors_and_classes', compact('professors'));
     }
 
-    // Admin Logout
+
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();
@@ -51,12 +50,12 @@ class AdminController extends Controller
         return redirect('/');
     }
 
-    // Managing Professors (CRUD Operations)
+
     public function indexProfessors()
     {
         $professors = Professor::all();
-        // Update this line to point to the correct view location (professors_and_classes)
-        return view('auth.admin.professors_and_classes', compact('professors')); // Correct view path
+       
+        return view('auth.admin.professors_and_classes', compact('professors')); 
     }
 
     public function createProfessor()
@@ -78,7 +77,7 @@ class AdminController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        // Redirect to the professors_and_classes view after successful addition
+        
         return redirect()->route('admin.professors.index')->with('success', 'Professor added successfully!');
     }
 
@@ -94,29 +93,27 @@ class AdminController extends Controller
             'email' => 'required|email|unique:professors,email,' . $professor->id,
         ]);
 
-        // Only update the password if it is provided
+        
         $professor->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            // Check if password is present and update it
+            
             'password' => $request->filled('password') ? Hash::make($request->input('password')) : $professor->password,
         ]);
 
-        // Redirect to the professors_and_classes view after update
+       
         return redirect()->route('admin.professors.index')->with('success', 'Professor updated successfully!');
     }
 
-    // Deleting a professor and keeping the admin on the same page
+    
     public function destroyProfessor(Professor $professor)
     {
-        // Deleting the professor
         $professor->delete();
 
-        // Redirect back to the professors list with success message
         return redirect()->route('admin.professors.index')->with('success', 'Professor deleted successfully!');
     }
 
-    // Managing Courses (CRUD Operations)
+    // wwwwwwww
     public function indexCourses()
     {
         $courses = Course::all();
@@ -125,7 +122,7 @@ class AdminController extends Controller
 
     public function createCourse()
     {
-        $professors = Professor::all(); // Get all professors to associate a course
+        $professors = Professor::all(); 
         return view('admin.courses.create', compact('professors'));
     }
 
@@ -136,7 +133,7 @@ class AdminController extends Controller
             'groupe' => 'required|string|max:255',
             'course_name' => 'required|string|max:255',
             'details' => 'required|string',
-            'professor_id' => 'required|exists:professors,id', // Make sure professor is valid
+            'professor_id' => 'required|exists:professors,id', 
         ]);
 
         Course::create([
@@ -152,7 +149,7 @@ class AdminController extends Controller
 
     public function editCourse(Course $course)
     {
-        $professors = Professor::all(); // Get all professors to associate a course
+        $professors = Professor::all(); 
         return view('admin.courses.edit', compact('course', 'professors'));
     }
 
@@ -163,7 +160,7 @@ class AdminController extends Controller
             'groupe' => 'required|string|max:255',
             'course_name' => 'required|string|max:255',
             'details' => 'required|string',
-            'professor_id' => 'required|exists:professors,id', // Make sure professor is valid
+            'professor_id' => 'required|exists:professors,id', 
         ]);
 
         $course->update($validated);
@@ -171,7 +168,6 @@ class AdminController extends Controller
         return redirect()->route('admin.courses.index')->with('success', 'Course updated successfully!');
     }
 
-    // Deleting a course and keeping the admin on the same page
     public function destroyCourse(Course $course)
     {
         $course->delete();

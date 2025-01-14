@@ -10,13 +10,13 @@ class CreateClassesTable extends Migration
     {
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
-            $table->date('date'); // Date of the class
-            $table->string('groupe'); // Group
-            $table->string('course_name'); // Course name
-            $table->text('details'); // Lesson details
-            $table->unsignedBigInteger('professor_id'); // Foreign key referencing the professor
+            $table->date('date'); 
+            $table->string('groupe'); 
+            $table->string('course_name'); 
+            $table->text('details'); 
+            $table->unsignedBigInteger('professor_id'); 
             $table->foreign('professor_id')->references('id')->on('professors')->onDelete('cascade');
-            $table->timestamps(); // Created at and updated at timestamps
+            $table->timestamps(); 
         });
     }
 
